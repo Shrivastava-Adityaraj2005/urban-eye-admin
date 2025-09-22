@@ -7,6 +7,8 @@ import SearchBar from './components/SearchBar'
 import LiveMap from './components/LiveMap'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Description from './pages/Description'
 
 function App() {
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -19,14 +21,19 @@ function App() {
 
   return (
     <>
+      <BrowserRouter>
       <Navbar />
-      <SearchBar onSelectLocation={handleSelectLocation} />
-      <Filters />
-      <LiveMap
-        selectedLocation={selectedLocation}
-        selectedCity={selectedCity}
-      />
-      <Footer />
+        <Routes>
+          <Route path="/" element={<><SearchBar onSelectLocation={handleSelectLocation} /><Filters />
+                                      <LiveMap
+                                        selectedLocation={selectedLocation}
+                                        selectedCity={selectedCity}/></>}>
+          </Route>
+          <Route path="/complain/:id" element={<Description/>}></Route>   
+        </Routes>
+
+        <Footer />
+      </BrowserRouter>
     </>
   );
 }
