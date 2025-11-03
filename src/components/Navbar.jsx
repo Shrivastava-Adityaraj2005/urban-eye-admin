@@ -9,7 +9,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex justify-between items-center w-[100%] bg-gray-400 text-white p-4 shadow-lg z-50">
+    <nav className="flex justify-between items-center w-[100%] bg-[#4b49ac] text-white p-4 shadow-lg z-50">
       {/* Left side: Logo and Name */}
       <div className="flex items-center space-x-3">
         <BlinkingEye/>
@@ -18,7 +18,7 @@ const Navbar = () => {
 
       {/* Right side: Desktop buttons */}
       <div className="hidden sm:flex items-center space-x-6">
-        <button className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md transition duration-200">
+        <button className="bg-[#f3797e] hover:bg-gray-600 text-black py-2 px-4 rounded-md transition duration-200 ">
           Analytics
         </button>
         <button className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md transition duration-200">

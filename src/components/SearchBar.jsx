@@ -66,7 +66,7 @@ function SearchBar({ onSelectLocation }) {
         <input
           type="text"
           placeholder="Location"
-          className="w-full sm:w-96 mr-4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full sm:w-96 mr-4 px-3 py-2 bg-white border border-[#7a74e9] text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7a74e9] focus:border-transparent"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
@@ -74,7 +74,7 @@ function SearchBar({ onSelectLocation }) {
           }}
         />
         <button
-          className="mt-2 sm:mt-0 px-4 py-2 bg-neutral-700 text-white rounded-md hover:bg-neutral-600 focus:outline-none hover:cursor-pointer"
+          className="mt-2 sm:mt-0 px-4 py-2 bg-[#7978e9] text-white text-shadow-xl rounded-md hover:bg-neutral-500 focus:outline-none hover:cursor-pointer"
           onClick={apiCall}
         >
           Search

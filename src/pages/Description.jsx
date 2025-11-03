@@ -12,7 +12,7 @@ function Description() {
 
     const getDetail = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/complaint/${id}`);
+            const response = await axios.get(`http://ec2-98-93-68-210.compute-1.amazonaws.com:8080/complaint/${id}`);
             const complaint = response.data;
 
             let base64Image = null;
@@ -54,7 +54,7 @@ function Description() {
     }
 
     return (
-        <div className="h-[calc(100vh-124px)] bg-gray-100 flex items-center justify-center p-4">
+        <div className="h-[calc(100vh-128px)] bg-[#98bdff] flex items-center justify-center p-4">
             <div className="w-full max-w-md h-auto rounded-2xl bg-white flex flex-col items-center p-6 space-y-6 shadow-lg">
 
                 {/* Image Box */}
