@@ -12,25 +12,25 @@ function Description() {
 
     const getDetail = async () => {
         try {
-            const response = await axios.get(`http://ec2-98-93-68-210.compute-1.amazonaws.com:8080/complaint/${id}`);
+            const response = await axios.get(`https://sunday-mike-encourage-craps.trycloudflare.com/complaint/${id}`);
             const complaint = response.data;
 
-            let base64Image = null;
+            // let base64Image = null;
 
-            if (complaint.imageData) {
-                if (typeof complaint.imageData === "string") {
-                    base64Image = complaint.imageData;
-                } else if (complaint.imageData.data) {
-                    base64Image = byteArrayToBase64(complaint.imageData.data);
-                }
-            }
+            // if (complaint.imageData) {
+            //     if (typeof complaint.imageData === "string") {
+            //         base64Image = complaint.imageData;
+            //     } else if (complaint.imageData.data) {
+            //         base64Image = byteArrayToBase64(complaint.imageData.data);
+            //     }
+            // }
 
-            const complaintWithImage = {
-                ...complaint,
-                base64Image,
-            };
+            // const complaintWithImage = {
+            //     ...complaint,
+            //     base64Image,
+            // };
 
-            setDetail(complaintWithImage);
+            setDetail(complaint);
         } catch (error) {
             console.error("Error loading complaint detail", error);
         }
@@ -54,14 +54,14 @@ function Description() {
     }
 
     return (
-        <div className="h-[calc(100vh-128px)] bg-[#98bdff] flex items-center justify-center p-4">
-            <div className="w-full max-w-md h-auto rounded-2xl bg-white flex flex-col items-center p-6 space-y-6 shadow-lg">
+        <div className="h-[calc(100vh-128px)] bg-[#98bdff] flex items-center justify-center p-4 m-5">
+            <div className="w-full max-w-md h-auto rounded-2xl bg-[#4b49ac] flex flex-col items-center p-6 space-y-6 shadow-lg">
 
                 {/* Image Box */}
                 <div className="w-full h-40 bg-gray-200 rounded-lg shadow-md flex items-center justify-center overflow-hidden">
-                    {detail.base64Image ? (
+                    {detail.imageUri ? (
                         <img
-                            src={`data:image/jpeg;base64,${detail.base64Image}`}
+                            src={detail.imageUri}
                             alt="Complaint"
                             className="object-cover h-full w-full"
                         />

@@ -42,7 +42,7 @@ const LiveMap = ({ selectedLocation, priority, category }) => {
 
   async function fetchComplaints() {
     try {
-      const res = await axios.get("http://ec2-98-93-68-210.compute-1.amazonaws.com:8080/complaints");
+      const res = await axios.get("https://sunday-mike-encourage-craps.trycloudflare.com/complaints");
       console.log("Complaints from API:", res.data); // check structure
       setComplaints(res.data);
     } catch (err) {
