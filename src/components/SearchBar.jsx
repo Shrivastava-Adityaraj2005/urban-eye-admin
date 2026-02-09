@@ -74,7 +74,7 @@ function SearchBar({ onSelectLocation }) {
           }}
         />
         <button
-          className="mt-2 sm:mt-0 px-4 py-2 bg-[#7978e9] text-white text-shadow-xl rounded-md hover:bg-neutral-500 focus:outline-none hover:cursor-pointer"
+          className="px-8 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-700 transition shadow-lg"
           onClick={apiCall}
         >
           Search

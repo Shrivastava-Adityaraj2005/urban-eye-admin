@@ -7,6 +7,7 @@ function MapPage() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [priority, setPriority] = useState("all");
   const [category, setCategory] = useState("all");
+  
   console.log('d ', setPriority)
 
   return (

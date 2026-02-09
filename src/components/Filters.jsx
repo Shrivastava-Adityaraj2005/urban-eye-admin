@@ -1,12 +1,12 @@
 import React from "react";
 
 export default function Filters({ priority, setPriority, category, setCategory }) {
-  console.log("c"+setPriority)
+  
   return (
     <div className="flex flex-col gap-4 w-full max-w-md mx-auto mt-10 px-4 sm:px-0">
       {/* Priority Filter */}
       <div className="flex flex-col sm:flex-row items-center justify-between sm:space-x-4">
-        <label className="font-semibold w-full sm:w-28 mb-2 sm:mb-0">Priority</label>
+        <label className="text-white font-semibold w-full sm:w-28 mb-2 sm:mb-0">Priority</label>
         <select
           value={priority}
           onChange={(e) => setPriority(e.target.value)}
@@ -21,7 +21,7 @@ export default function Filters({ priority, setPriority, category, setCategory }
 
       {/* Category Filter */}
       <div className="flex flex-col sm:flex-row items-center justify-between sm:space-x-4">
-        <label className="font-semibold w-full sm:w-28 mb-2 sm:mb-0">Category</label>
+        <label className="text-white font-semibold w-full sm:w-28 mb-2 sm:mb-0">Category</label>
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}

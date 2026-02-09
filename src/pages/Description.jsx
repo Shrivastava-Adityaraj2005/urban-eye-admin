@@ -1,100 +1,91 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 
+import api from "../../api";
+import { UserContext } from "../store/user-context";
+
 function Description() {
-    const [detail, setDetail] = useState(null);
-    const { id } = useParams();
+  const [detail, setDetail] = useState(null);
+  const { id } = useParams();
+  const userContext = useContext(UserContext);
 
-    useEffect(() => {
-        getDetail();
-    }, []);
+  useEffect(() => {
+    getDetail();
+  }, []);
 
-    const getDetail = async () => {
-        try {
-            const response = await axios.get(`http://ec2-98-93-68-210.compute-1.amazonaws.com:8080/complaint/${id}`);
-            const complaint = response.data;
+  const getDetail = async () => {
+    try {
+      const response = await api.get(`/complaint/${id}`, {
+        headers: {
+          Authorization: `Bearer ${userContext.user.token}`,
+        },
+      });
 
-            let base64Image = null;
+      const complaint = response.data;
 
-            if (complaint.imageData) {
-                if (typeof complaint.imageData === "string") {
-                    base64Image = complaint.imageData;
-                } else if (complaint.imageData.data) {
-                    base64Image = byteArrayToBase64(complaint.imageData.data);
-                }
-            }
+      const complaintWithImageUrl = {
+        ...complaint,
+        imageUrl:
+          complaint.imageUrl ||
+          `data:${complaint.imageType};base64,${complaint.imageBase64}`,
+      };
 
-            const complaintWithImage = {
-                ...complaint,
-                base64Image,
-            };
-
-            setDetail(complaintWithImage);
-        } catch (error) {
-            console.error("Error loading complaint detail", error);
-        }
-    };
-
-    const byteArrayToBase64 = (byteArray) => {
-        const uint8Array = new Uint8Array(byteArray);
-        let binary = "";
-        for (let i = 0; i < uint8Array.length; i++) {
-            binary += String.fromCharCode(uint8Array[i]);
-        }
-        return window.btoa(binary);
-    };
-
-    if (!detail) {
-        return (
-            <div className="h-screen flex items-center justify-center">
-                <p className="text-gray-500">Loading complaint details...</p>
-            </div>
-        );
+      setDetail(complaintWithImageUrl);
+    } catch (error) {
+      console.error("Error loading complaint detail", error);
     }
+  };
 
+  if (!detail) {
     return (
-        <div className="h-[calc(100vh-128px)] bg-[#98bdff] flex items-center justify-center p-4">
-            <div className="w-full max-w-md h-auto rounded-2xl bg-white flex flex-col items-center p-6 space-y-6 shadow-lg">
-
-                {/* Image Box */}
-                <div className="w-full h-40 bg-gray-200 rounded-lg shadow-md flex items-center justify-center overflow-hidden">
-                    {detail.base64Image ? (
-                        <img
-                            src={`data:image/jpeg;base64,${detail.base64Image}`}
-                            alt="Complaint"
-                            className="object-cover h-full w-full"
-                        />
-                    ) : (
-                        <span className="text-gray-400">No image available</span>
-                    )}
-                </div>
-
-                {/* Title Input (Read-only) */}
-                <input
-                    type="text"
-                    placeholder="Enter title"
-                    value={detail.title}
-                    readOnly
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-100"
-                />
-
-                {/* Description Input (Read-only) */}
-                <textarea
-                    placeholder="Enter description"
-                    value={detail.description}
-                    readOnly
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-100"
-                    rows="3"
-                />
-
-                {/* Assign Button */}
-                <button className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition">
-                    Assign
-                </button>
-            </div>
-        </div>
+      <div className="h-screen flex items-center justify-center bg-slate-800">
+        <p className="text-slate-300">Loading complaint details...</p>
+      </div>
     );
+  }
+
+  return (
+    <div className="h-[calc(100vh-128px)] bg-gradient-to-br from-slate-800 via-slate-700 to-amber-800 flex items-center justify-center p-4">
+      
+      {/* 🔥 MAIN DETAIL BOX */}
+      <div className="w-full max-w-md rounded-2xl bg-slate-900/90 backdrop-blur-md flex flex-col items-center p-6 space-y-6 shadow-2xl border border-slate-700">
+        
+        {/* Image Box */}
+        <div className="w-full h-40 bg-slate-800 rounded-xl shadow-inner flex items-center justify-center overflow-hidden border border-slate-700">
+          {detail.imageUrl ? (
+            <img
+              src={detail.imageUrl}
+              alt="Complaint"
+              className="object-cover h-full w-full"
+            />
+          ) : (
+            <span className="text-slate-400">No image available</span>
+          )}
+        </div>
+
+        {/* Title */}
+        <input
+          type="text"
+          value={detail.title}
+          readOnly
+          className="w-full px-4 py-2 rounded-lg border border-slate-600 bg-slate-800 text-slate-100 font-medium focus:outline-none"
+        />
+
+        {/* Description */}
+        <textarea
+          value={detail.description}
+          readOnly
+          rows="3"
+          className="w-full px-4 py-2 rounded-lg border border-slate-600 bg-slate-800 text-slate-200 resize-none focus:outline-none"
+        />
+
+        {/* Assign Button */}
+        <button className="px-8 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-700 transition shadow-lg">
+          Assign
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default Description;
