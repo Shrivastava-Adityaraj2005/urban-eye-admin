@@ -1,7 +1,7 @@
 import axios from "axios";
-
+//https://urban-eye-backend.onrender.com
 const api = axios.create({
-  baseURL: "https://urban-eye-backend.onrender.com",
+  baseURL: "http://localhost:8080",
 });
 
 api.interceptors.request.use(

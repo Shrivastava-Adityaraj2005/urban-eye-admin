@@ -6,6 +6,9 @@ import { UserContext } from "../store/user-context";
 
 function Description() {
   const [detail, setDetail] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [popup, setPopup] = useState({ show: false, message: "" });
+
   const { id } = useParams();
   const userContext = useContext(UserContext);
 
@@ -13,6 +16,67 @@ function Description() {
     getDetail();
   }, []);
 
+  // 🔥 POPUP
+  const showPopup = (msg) => {
+    setPopup({ show: true, message: msg });
+    setTimeout(() => {
+      setPopup({ show: false, message: "" });
+    }, 2000);
+  };
+
+  // ✅ APPROVE
+  const approveComplaint = async () => {
+    try {
+      setLoading(true);
+
+      await api.patch(
+        `/complaint/${id}/in-queue`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${userContext.user.token}`,
+          },
+        }
+      );
+
+      showPopup("Complaint Approved");
+      await getDetail(); // refresh status
+    } catch (error) {
+      console.log(error.message);
+      showPopup("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ VERIFY
+  const verifyComplaint = async () => {
+    try {
+      setLoading(true);
+
+      await api.patch(
+        `/complaint/verify`,
+        {
+          complaintId: Number(id),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userContext.user.token}`,
+          },
+        }
+      );
+
+      showPopup("Complaint Verified & Completed");
+      await getDetail(); // refresh
+    } catch (error) {
+      console.log(error.message);
+      showPopup("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ FETCH DATA
   const getDetail = async () => {
     try {
       const response = await api.get(`/complaint/${id}`, {
@@ -23,14 +87,11 @@ function Description() {
 
       const complaint = response.data;
 
-      const complaintWithImageUrl = {
+      setDetail({
         ...complaint,
-        imageUrl:
-          complaint.imageUrl ||
-          `data:${complaint.imageType};base64,${complaint.imageBase64}`,
-      };
-
-      setDetail(complaintWithImageUrl);
+        initialImage: complaint.imageUri,
+        finalImage: complaint.finalImageUri,
+      });
     } catch (error) {
       console.error("Error loading complaint detail", error);
     }
@@ -45,44 +106,103 @@ function Description() {
   }
 
   return (
-    <div className="h-[calc(100vh-128px)] bg-gradient-to-br from-slate-800 via-slate-700 to-amber-800 flex items-center justify-center p-4">
-      
-      {/* 🔥 MAIN DETAIL BOX */}
-      <div className="w-full max-w-md rounded-2xl bg-slate-900/90 backdrop-blur-md flex flex-col items-center p-6 space-y-6 shadow-2xl border border-slate-700">
+    <div className="h-screen overflow-hidden relative bg-gradient-to-br from-slate-800 via-slate-700 to-amber-800 flex items-center justify-center p-4">
+
+      {/* 🔥 POPUP */}
+      {popup.show && (
+        <div className="absolute top-6 right-6 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg">
+          {popup.message}
+        </div>
+      )}
+
+      <div className="w-full max-w-4xl rounded-2xl bg-slate-900/90 backdrop-blur-md p-6 shadow-2xl border border-slate-700">
         
-        {/* Image Box */}
-        <div className="w-full h-40 bg-slate-800 rounded-xl shadow-inner flex items-center justify-center overflow-hidden border border-slate-700">
-          {detail.imageUrl ? (
-            <img
-              src={detail.imageUrl}
-              alt="Complaint"
-              className="object-cover h-full w-full"
-            />
-          ) : (
-            <span className="text-slate-400">No image available</span>
-          )}
+        {/* 🔥 IMAGES */}
+        <div className="flex gap-6 mb-4">
+          
+          <div className="w-1/2">
+            <p className="text-slate-300 mb-2 text-sm">Before Work</p>
+            <div className="h-64 bg-slate-800 rounded-xl overflow-hidden border border-slate-700">
+              {detail.initialImage ? (
+                <img src={detail.initialImage} alt="Before" className="object-cover w-full h-full" />
+              ) : (
+                <span className="text-slate-400 flex justify-center items-center h-full">
+                  No image
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="w-1/2">
+            <p className="text-slate-300 mb-2 text-sm">After Work</p>
+            <div className="h-64 bg-slate-800 rounded-xl overflow-hidden border border-slate-700">
+              {detail.finalImage ? (
+                <img src={detail.finalImage} alt="After" className="object-cover w-full h-full" />
+              ) : (
+                <span className="text-slate-400 flex justify-center items-center h-full">
+                  Not uploaded yet
+                </span>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Title */}
-        <input
-          type="text"
-          value={detail.title}
-          readOnly
-          className="w-full px-4 py-2 rounded-lg border border-slate-600 bg-slate-800 text-slate-100 font-medium focus:outline-none"
-        />
+        {/* 🔥 TEXT */}
+        <div className="space-y-3 mb-4">
+          <input
+            type="text"
+            value={detail.title}
+            readOnly
+            className="w-full px-4 py-2 rounded-lg border border-slate-600 bg-slate-800 text-slate-100 font-medium"
+          />
 
-        {/* Description */}
-        <textarea
-          value={detail.description}
-          readOnly
-          rows="3"
-          className="w-full px-4 py-2 rounded-lg border border-slate-600 bg-slate-800 text-slate-200 resize-none focus:outline-none"
-        />
+          <textarea
+            value={detail.description}
+            readOnly
+            rows="2"
+            className="w-full px-4 py-2 rounded-lg border border-slate-600 bg-slate-800 text-slate-200 resize-none"
+          />
+        </div>
 
-        {/* Assign Button */}
-        <button className="px-8 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-700 transition shadow-lg">
-          Assign
-        </button>
+        {/* 🔥 BUTTON LOGIC */}
+        <div className="flex justify-center">
+          
+          {/* APPROVE */}
+          {detail.status === "Pending" && (
+            <button
+              onClick={approveComplaint}
+              disabled={loading}
+              className={`px-8 py-2 text-white font-semibold rounded-xl transition shadow-lg flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600
+                ${loading ? "opacity-70 cursor-not-allowed" : ""}
+              `}
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                "Approve"
+              )}
+            </button>
+          )}
+
+          {/* VERIFY */}
+          {detail.status !== "Pending" && detail.finalImage && (
+            <button
+              onClick={verifyComplaint}
+              disabled={loading}
+              className={`px-8 py-2 text-white font-semibold rounded-xl transition shadow-lg flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600
+                ${loading ? "opacity-70 cursor-not-allowed" : ""}
+              `}
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                "Verify"
+              )}
+            </button>
+          )}
+
+        </div>
+
       </div>
     </div>
   );
