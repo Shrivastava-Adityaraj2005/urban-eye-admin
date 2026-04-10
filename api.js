@@ -1,7 +1,10 @@
 import axios from "axios";
-//https://urban-eye-backend.onrender.com
+
 const api = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:8080",
+  headers: {
+    "ngrok-skip-browser-warning": "true",
+  },
 });
 
 api.interceptors.request.use(
@@ -10,7 +13,7 @@ api.interceptors.request.use(
     config.headers["ngrok-skip-browser-warning"] = "true";
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export default api;

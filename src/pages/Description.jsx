@@ -42,6 +42,10 @@ function Description() {
       showPopup("Complaint Approved");
       await getDetail(); // refresh status
     } catch (error) {
+      if (err.response?.status === 401) {
+        userContext.clearUser();
+        return;
+      }
       console.log(error.message);
       showPopup("Something went wrong");
     } finally {
@@ -69,6 +73,10 @@ function Description() {
       showPopup("Complaint Verified & Completed");
       await getDetail(); // refresh
     } catch (error) {
+      if (err.response?.status === 401) {
+        userContext.clearUser();
+        return;
+      }
       console.log(error.message);
       showPopup("Something went wrong");
     } finally {
@@ -93,6 +101,10 @@ function Description() {
         finalImage: complaint.finalImageUri,
       });
     } catch (error) {
+      if (err.response?.status === 401) {
+        userContext.clearUser();
+        return;
+      }
       console.error("Error loading complaint detail", error);
     }
   };
@@ -110,7 +122,7 @@ function Description() {
 
       {/* 🔥 POPUP */}
       {popup.show && (
-        <div className="absolute top-6 right-6 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg">
+        <div className="absolute top-6 right-6 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-999">
           {popup.message}
         </div>
       )}
@@ -168,35 +180,33 @@ function Description() {
         <div className="flex justify-center">
           
           {/* APPROVE */}
-          {detail.status === "Pending" && (
-            <button
-              onClick={approveComplaint}
-              disabled={loading}
-              className={`px-8 py-2 text-white font-semibold rounded-xl transition shadow-lg flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600
-                ${loading ? "opacity-70 cursor-not-allowed" : ""}
-              `}
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                "Approve"
-              )}
-            </button>
-          )}
+          <button
+            onClick={approveComplaint}
+            disabled={loading || detail.status !== "Pending"}
+            className={`px-8 py-2 text-white font-semibold rounded-xl transition shadow-lg flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600
+              ${loading || detail.status !== "Pending" ? "opacity-70 cursor-not-allowed" : "hover:cursor-pointer"}
+            `}
+          >
+            {loading && detail.status === "Pending" ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              detail.status === "Pending" ? "Approve" : "Approved"
+            )}
+          </button>
 
           {/* VERIFY */}
           {detail.status !== "Pending" && detail.finalImage && (
             <button
               onClick={verifyComplaint}
-              disabled={loading}
-              className={`px-8 py-2 text-white font-semibold rounded-xl transition shadow-lg flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600
-                ${loading ? "opacity-70 cursor-not-allowed" : ""}
+              disabled={loading || detail.status === "Completed"}
+              className={`px-8 py-2 ml-8 text-white font-semibold rounded-xl transition shadow-lg flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600
+                ${loading || detail.status === "Completed" ? "opacity-70 cursor-not-allowed" : "hover:cursor-pointer"}
               `}
             >
-              {loading ? (
+              {loading && detail.status === "Under Review" ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : (
-                "Verify"
+                detail.status === "Under Review" ? "Verify" : "Verified"
               )}
             </button>
           )}

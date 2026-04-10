@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import MarkerClusterGroup from "react-leaflet-cluster";
+import MarkerClusterGroup from "react-leaflet-markercluster";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -53,6 +53,10 @@ const LiveMap = ({ selectedLocation, priority, category }) => {
       });
       setComplaints(res.data);
     } catch (err) {
+      if (err.response?.status === 401) {
+        userContext.clearUser();
+        return;
+      }
       console.error("Error fetching complaints:", err);
     }
   }
